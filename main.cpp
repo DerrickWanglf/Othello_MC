@@ -5,7 +5,6 @@
 #include"board.h"
 #include"MCNode.h"
 
-
 using namespace std;
 
 int main() {
