@@ -55,7 +55,7 @@ public:
         double res = base + childrenfactor + processfactor;
         if(res > 55) res = 55;
         if(res > n) res = n;
-        return res;
+        return n;
     }
 
 private:

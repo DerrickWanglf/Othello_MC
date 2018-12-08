@@ -71,22 +71,27 @@ MCNode* MCNode::SearchAndPlay(float timelim) {
 	const double timelimit = getTimelimit(timelim);
 	//const double timelimit = timelim;
 	std::cout<<endl<<"searching..............."<<endl;
-	std::cout << "searchtime: " << fixed<<setprecision(4)<<timelimit << std::endl;
+
 
 	time_t s_time, t_time;
-	time(&s_time);
-
+	double searchtime = 0 ;
 	int i = 0;
 	int searchend;
 	// MCTSing until search ends or reach the time limit
 	while(1){
+		s_time = clock();
 		searchend = SearchOnce();
-		if (searchend) { std::cout << "Search End" << std::endl; break; }
 		i++;
-		time(&t_time);
-		if (difftime(t_time, s_time) > timelimit) break;
+		t_time = clock();
+		if (searchend) { std::cout << "Search End" << std::endl; break; }
+		double diff = double( t_time - s_time)/1000000;
+		searchtime += diff;
+		if (searchtime > timelimit) break;
+
 	}
 
+	if(searchtime > timelimit) searchtime = timelimit;
+	std::cout << "searchtime: " << fixed<<setprecision(6)<<searchtime << std::endl;
 	// choose the best child
 	int n = -1;
 	double maxucb = -2;
