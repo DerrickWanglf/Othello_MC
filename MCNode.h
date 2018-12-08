@@ -35,8 +35,9 @@ public:
 	//FOT TEST, print out the tree, can be just a number of levels
 	void showtree(int level, int tatrgetlevel);
 	void showtree(int level);
+
 	double getTimelimit(int n){
-        double base = n;
+        double base = n/2;
         double childrenfactor;
         double processfactor;
 
@@ -53,6 +54,7 @@ public:
 
         double res = base + childrenfactor + processfactor;
         if(res > 55) res = 55;
+        if(res > n) res = n;
         return res;
     }
 
