@@ -24,7 +24,7 @@ public:
 	vector<MCNode*> children;
 	MCNode *parent;
 
-    MCNode* SearchAndPlay(int n);
+    MCNode* SearchAndPlay(float n);
 	MCNode* Play(int n);
 	MCNode* Play(int x, int y);
 	void BackPropagation(double val);
@@ -36,7 +36,7 @@ public:
 	void showtree(int level, int tatrgetlevel);
 	void showtree(int level);
 
-	double getTimelimit(int n){
+	double getTimelimit(float n){
         double base = n/2;
         double childrenfactor;
         double processfactor;

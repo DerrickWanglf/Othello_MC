@@ -10,7 +10,7 @@ using namespace std;
 
 int main(int argc, const char *argv[]) {
     int computer = WHITE;
-    float timelimit = 2;
+    float timelimit;
     srand(time(0));
 
 	char c;

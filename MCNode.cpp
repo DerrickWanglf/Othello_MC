@@ -1,4 +1,6 @@
 #include"MCNode.h"
+#include <stdio.h>
+#include"iomanip"
 #include "constant.h"
 
 
@@ -64,12 +66,13 @@ int MCNode::SearchOnce() {
 	return 0;
 }
 
-MCNode* MCNode::SearchAndPlay(int timelim) {
+MCNode* MCNode::SearchAndPlay(float timelim) {
 	//get the time limit
 	const double timelimit = getTimelimit(timelim);
 	//const double timelimit = timelim;
 	std::cout<<endl<<"searching..............."<<endl;
-	std::cout << "searchtime: " << timelimit << std::endl;
+	std::cout << "searchtime: " << fixed<<setprecision(4)<<timelimit << std::endl;
+
 	time_t s_time, t_time;
 	time(&s_time);
 
