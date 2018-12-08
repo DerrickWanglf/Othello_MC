@@ -13,6 +13,10 @@
 -- Detecting CXX compiler ABI info - done
 -- Detecting CXX compile features
 -- Detecting CXX compile features - done
+-- Boost version: 1.68.0
+-- Found the following Boost libraries:
+--   system
+--   filesystem
 -- Configuring done
 -- Generating done
 -- Build files have been written to: /Users/mac/Desktop/projects/Othello_MC/cmake-build-debug

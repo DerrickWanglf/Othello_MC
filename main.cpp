@@ -1,20 +1,33 @@
 #include<iostream>
 #include<stdlib.h>
 #include<time.h>
-#include "constant.h"
 #include"board.h"
 #include"MCNode.h"
+#include "constant.h"
 
 using namespace std;
+//namespace po = boost::program_options;
 
-int main() {
+int main(int argc, const char *argv[]) {
+    int computer = WHITE;
+    float timelimit = 2;
+    srand(time(0));
+
 	char c;
-	int a, b;
 	Board* othello = new Board();
 	othello->showboard();
 	MCNode *mtree=  new MCNode(othello);
-	const int COMPUTER = WHITE;
-	srand(time(0));
+
+	cout<<"PLEASE choose computer turn, Black 1, White -1:"<<endl;
+	while(1){
+		cin>>computer;
+		if(computer == 1 || computer == -1)
+			break;
+		else
+			cout<<"Wrong type"<<endl;
+	}
+    const int COMPUTER = computer;
+
 	while (mtree->othello->boardstate == Board::PLAYING) {
 		if (mtree->othello->turn == COMPUTER) {
 			mtree = mtree->SearchAndPlay();

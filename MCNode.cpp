@@ -71,6 +71,7 @@ MCNode* MCNode::SearchAndPlay() {
 	std::cout << "searchtime: " << timelimit << std::endl;
 	time_t s_time, t_time;
 	time(&s_time);
+
 	int i = 0;
 	int searchend;
 	// MCTSing until search ends or reach the time limit
@@ -106,6 +107,7 @@ MCNode* MCNode::SearchAndPlay() {
 	return Play(n);
 }
 
+
 int MCNode::DefaultPolicy() {
 	// randomly roll out
 	Board tothello(*othello);
@@ -114,6 +116,7 @@ int MCNode::DefaultPolicy() {
 	}
 	return tothello.boardstate;
 }
+
 
 void MCNode::BackPropagation(double val) {
 	for (MCNode *tnode = this; tnode; tnode = tnode->parent) {

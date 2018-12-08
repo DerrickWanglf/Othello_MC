@@ -38,7 +38,7 @@ public:
 private:
 	// get the search time bound
 	inline double getTimelimit(){
-		double base = 20;
+		double base = 2;
 		double childrenfactor;
 		double processfactor;
 
@@ -57,6 +57,7 @@ private:
 		if(res > 55) res = 55;
 		return res;
 	}
+
 	int TreePolicy();
 	int DefaultPolicy();
 	int SearchOnce();

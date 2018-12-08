@@ -3,6 +3,8 @@ project(Othello_MC)
 
 set(CMAKE_CXX_STANDARD 14)
 
+include_directories(${INC})
+
 include_directories(.)
 
 add_executable(Othello_MC
