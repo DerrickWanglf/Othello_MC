@@ -27,10 +27,11 @@ int main(int argc, const char *argv[]) {
 			cout<<"Wrong type"<<endl;
 	}
     const int COMPUTER = computer;
-
+	cout<<"PLEASE enter the base timelimit perstep:"<<endl;
+	cin>>timelimit;
 	while (mtree->othello->boardstate == Board::PLAYING) {
 		if (mtree->othello->turn == COMPUTER) {
-			mtree = mtree->SearchAndPlay();
+			mtree = mtree->SearchAndPlay(timelimit);
 		}
 		else {
 

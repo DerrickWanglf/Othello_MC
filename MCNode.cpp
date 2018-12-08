@@ -10,6 +10,7 @@ MCNode::MCNode(Board *othello){
 	parent = 0;
 	vn = an = 0;
     blackCount = whiteCount = 0;
+    time_li = 2;
 }
 
 int MCNode::TreePolicy() {
@@ -63,10 +64,10 @@ int MCNode::SearchOnce() {
 	return 0;
 }
 
-MCNode* MCNode::SearchAndPlay() {
+MCNode* MCNode::SearchAndPlay(int timelim) {
 	//get the time limit
-	const double timelimit = getTimelimit();
-
+	//const double timelimit = getTimelimit(timelim);
+	const double timelimit = timelim;
 	std::cout<<endl<<"searching..............."<<endl;
 	std::cout << "searchtime: " << timelimit << std::endl;
 	time_t s_time, t_time;
