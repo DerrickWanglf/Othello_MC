@@ -8,13 +8,12 @@
 
 using namespace std;
 
-// class that record a possibile playing position  
-// along with the number of chesses that should be reversed in each direction if the position is played
-class PlayRev {
+
+class Rec {
 public:
 	int pos;
 	int revset[8] = {};
-	PlayRev();
+	Rec();
 };
 
 class Board {
@@ -59,12 +58,12 @@ public:
 	void updateplayset();
 
 	int play(int pos);
-	int play(PlayRev playrev);
+	int play(Rec Rec);
 
 	// play the board randomly
 	int randomplay();
 
-	vector<PlayRev> playset;
+	vector<Rec> playset;
 
 	// state of the board
 	// BLACK / WHITE / PLAYING / DRAW

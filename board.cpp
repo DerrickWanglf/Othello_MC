@@ -1,9 +1,7 @@
 #include "board.h"
 #include "constant.h"
 
-PlayRev::PlayRev() {
-
-}
+Rec::Rec() {}
 
 
 const int Board::DRAW = 3;
@@ -24,15 +22,15 @@ int Board::randomplay() {
 	return play(playset[rand() % playset.size()]);
 }
 
-int Board::play(PlayRev playrev) {
+int Board::play(Rec playrec) {
 	// uppdate the positon
 
-	int pos = playrev.pos;
+	int pos = playrec.pos;
 	board(pos) = turn;
 	// reverse chesses accordingly
 	for (int j = 0; j < 8; j++) {
 		int posoff = to1d(DIRSET[j][0], DIRSET[j][1]);
-		for (int k = 0; k < playrev.revset[j]; k++) {
+		for (int k = 0; k < playrec.revset[j]; k++) {
 			board(pos + posoff * (k + 1)) *= -1;
 		}
 	}
@@ -148,7 +146,7 @@ void Board::showboard() {
 void Board::updateplayset() {
 	int j, pos, dirx, diry, tposx, tposy, color, revnum, isvalid;
 	int revset[8];
-	PlayRev* playrev;
+	Rec* playrec;
 	playset.clear();
 	// for each position check once
 	for (pos = 0; pos < 64; pos++) {
@@ -168,22 +166,22 @@ void Board::updateplayset() {
 				else if (color == -turn) {
 					revnum++;
 				}
-				else if (color == turn) { 
+				else if (color == turn) {
 					if (revnum) {
-						revset[j] = revnum; 
-						isvalid = 1; 
+						revset[j] = revnum;
+						isvalid = 1;
 					}
-					break; 
+					break;
 				}
 			}
 		}
-		// add a new playrev to the revset
+		// add a new playrec to the revset
 		if (isvalid) {
-			playset.push_back(PlayRev());
-			playrev = &playset[playset.size()-1];
-			playrev->pos = pos;
+			playset.push_back(Rec());
+			playrec = &playset[playset.size()-1];
+			playrec->pos = pos;
 			for (j = 0; j < 8; j++) {
-				playrev->revset[j] = revset[j];
+				playrec->revset[j] = revset[j];
 			}
 		}
 	}
