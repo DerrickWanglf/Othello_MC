@@ -6,14 +6,12 @@
 #include "constant.h"
 
 using namespace std;
-//namespace po = boost::program_options;
+
 
 int main(int argc, const char *argv[]) {
     int computer = WHITE;
     float timelimit;
-    srand(time(0));
 
-	char c;
 	Board* othello = new Board();
 	othello->showboard();
 	MCNode *mtree=  new MCNode(othello);
@@ -29,9 +27,10 @@ int main(int argc, const char *argv[]) {
     const int COMPUTER = computer;
 	cout<<"PLEASE enter the base timelimit perstep:"<<endl;
 	cin>>timelimit;
+
 	while (mtree->othello->boardstate == Board::PLAYING) {
 		if (mtree->othello->turn == COMPUTER) {
-			mtree = mtree->SearchAndPlay(timelimit);
+			mtree = mtree->AIPlay(timelimit);
 		}
 		else {
 
@@ -53,16 +52,6 @@ int main(int argc, const char *argv[]) {
 				mtree = mtree->Play(Board::to2dx(pp),Board::to2dy(pp));
 
 			}
-/*
-				std::cin >> a;
-			if (a == -1) {
-				srand(time(0));
-				mtree = mtree->Play(rand() % mtree->othello->playset.size());
-			}
-			else {
-				std::cin >> b;
-				mtree = mtree->Play(a, b);
-			}*/
 		}
 		mtree->othello->showboard();
 	}
@@ -74,6 +63,6 @@ int main(int argc, const char *argv[]) {
 	}else {
 		std::cout << "DRAW!" << std::endl;
 	}
-	std::cin >> c;
 
+	return  0;
 }

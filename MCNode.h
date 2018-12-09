@@ -5,36 +5,32 @@
 #include "constant.h"
 #include"board.h"
 
-// a Monte Carlo Search Tree Node
+
 class MCNode {
 public:
 	MCNode(Board *othello);
 
-	// game state
-	Board *othello;
-	// number of chesses on the board
-    int blackCount;
-    int whiteCount;
-	// Monte Carlo Value for the calcutation of UCT
-	int vn;
+	Board *othello; // current board
+
+    int blackCount;//number of black
+    int whiteCount;//number of white
+
+	int UCT_v;
 	int time_li;
-	// action
-	double an;
+
+	double visit_times;
 	
 	vector<MCNode*> children;
 	MCNode *parent;
 
-    MCNode* SearchAndPlay(float n);
+    MCNode* AIPlay(float n);
 	MCNode* Play(int n);
 	MCNode* Play(int x, int y);
-	void BackPropagation(double val);
+	void BP(double val);
+
 	void freetree();
 	//int fullexpanded;
 	~MCNode();
-
-	//FOT TEST, print out the tree, can be just a number of levels
-	void showtree(int level, int tatrgetlevel);
-	void showtree(int level);
 
 	double getTimelimit(float n){
         double base = n/2;
@@ -57,12 +53,8 @@ public:
         if(res > n) res = n;
         return n;
     }
+    int Policy();
+    int DefaultPolicy();
+    int Search();
 
-private:
-	// get the search time bound
-
-
-	int TreePolicy();
-	int DefaultPolicy();
-	int SearchOnce();
 };

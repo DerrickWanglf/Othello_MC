@@ -4,86 +4,93 @@
 #include "constant.h"
 
 
-//initial node, with k children, k is the number of next move
+
 MCNode::MCNode(Board *othello){
 	this->othello = othello;
-	// determine the number of children according to the playset of the give Othello
 	children = vector<MCNode*>(othello->playset.size(), (MCNode*)0);
 	parent = 0;
-	vn = an = 0;
+	UCT_v  = 0;
+    visit_times = 0;
     blackCount = whiteCount = 0;
     time_li = 2;
 }
 
-int MCNode::TreePolicy() {
-	const double r = 2;
-	double ucbval = -2, tval;
-	// if there are no children, -1 of ucbi will be returned
-	int ucbi = -1;
+int MCNode::Policy() {
+	const double weight = 2;
+	double uctval = -2;
+	double treeval;
+	int ucb = -1;
+
 	for (int i = 0; i < children.size(); i++) {
-		MCNode *tnode = children[i];
-		if (!tnode) return i;
-		if (!tnode->vn) return i;
-		// use the fomula of UCT
-		tval = (double)tnode->an / tnode->vn + r * sqrt(log((double)vn / tnode->vn));
-		if (tval > ucbval) { ucbval = tval; ucbi = i; }
+		MCNode * subnode = children[i];
+		if (subnode == NULL) return i;
+		if (subnode->UCT_v == 0) return i;
+
+		double temp = sqrt(log((double)UCT_v / subnode->UCT_v));
+        treeval = (double)subnode->visit_times / subnode->UCT_v + weight * temp; // fomula of UCT
+		// asign
+        if (treeval > uctval) {
+			uctval = treeval;
+			ucb = i;
+		}
 	}
-	return ucbi;
+	return ucb;
 }
 
-int MCNode::SearchOnce() {
-	MCNode *tnode = 0;
-	MCNode *nnode = this;
-	int n;
+int MCNode::Search() {
+	MCNode *pre_node = 0;
+	MCNode *cur_node = this;
+	int index;
 	// recursively get the child to be expanded
-	while (nnode) {
-		tnode = nnode;
-		n = tnode->TreePolicy();
-		if (n == -1) {
+	while (cur_node) {
+		pre_node = cur_node;
+		index = pre_node->Policy();
+		if (index == -1) {
 			return 1;
 		}
 		else {
-			nnode = tnode->children[n];
+			cur_node = pre_node->children[index];
 		}
 	}
 
 	// expand the node
-	Board *tothello = new Board(*(tnode->othello));
-	tothello->play(tothello->playset[n]);
-	nnode = new MCNode(tothello);
-	nnode->parent = tnode;
-	tnode->children[n] = nnode;
+	Board * cur_board = new Board(*(pre_node->othello));
+	cur_board->play(cur_board->playset[index]);
+	cur_node = new MCNode(cur_board);
+	cur_node->parent = pre_node;
+	pre_node->children[index] = cur_node;
 
-	// simulation and backPropagaion
-	int simuv = tnode->DefaultPolicy();
-	if (simuv == othello->turn) {
-		nnode->BackPropagation(1);
-	} else if(simuv == -(othello->turn)) {
-		nnode->BackPropagation(0);
+	// simulation
+	int node_si = pre_node->DefaultPolicy();
+
+	if (node_si == othello->turn){
+		cur_node->BP(1);
+	} else if(node_si == -(othello->turn)) {
+		cur_node->BP(0);
 	} else {
-		nnode->BackPropagation(0.5);
+		cur_node->BP(0.5);
 	}
 	return 0;
 }
 
-MCNode* MCNode::SearchAndPlay(float timelim) {
+MCNode* MCNode::AIPlay(float timelim) {
+
 	//get the time limit
 	const double timelimit = getTimelimit(timelim);
-	//const double timelimit = timelim;
-	std::cout<<endl<<"searching..............."<<endl;
 
+	std::cout<<endl<<"searching..............."<<endl;
 
 	time_t s_time, t_time;
 	double searchtime = 0 ;
 	int i = 0;
-	int searchend;
-	// MCTSing until search ends or reach the time limit
+	int over;
+
 	while(1){
 		s_time = clock();
-		searchend = SearchOnce();
+		over = Search();
 		i++;
 		t_time = clock();
-		if (searchend) { std::cout << "Search End" << std::endl; break; }
+		if (over) { std::cout << "Search End" << std::endl; break; }
 		double diff = double( t_time - s_time)/1000000;
 		searchtime += diff;
 		if (searchtime > timelimit) break;
@@ -92,13 +99,14 @@ MCNode* MCNode::SearchAndPlay(float timelim) {
 
 	if(searchtime > timelimit) searchtime = timelimit;
 	std::cout << "searchtime: " << fixed<<setprecision(6)<<searchtime << std::endl;
+	
 	// choose the best child
 	int n = -1;
 	double maxucb = -2;
 	double tucb;
 	for (int i = 0; i < children.size(); i++) {
 		if (!children[i]) continue;
-		tucb = (double)children[i]->an / children[i]->vn;
+		tucb = (double)children[i]->visit_times / children[i]->UCT_v;
 		if (tucb > maxucb){
 			maxucb = tucb;
 			n = i;
@@ -119,33 +127,32 @@ MCNode* MCNode::SearchAndPlay(float timelim) {
 
 int MCNode::DefaultPolicy() {
 	// randomly roll out
-	Board tothello(*othello);
-	while (tothello.boardstate == Board::PLAYING) {
-		tothello.randomplay();
+	Board board(*othello);
+	while (board.boardstate == Board::PLAYING) {
+		board.randomplay();
 	}
-	return tothello.boardstate;
+	return board.boardstate;
 }
 
 
-void MCNode::BackPropagation(double val) {
+void MCNode::BP(double val) {
 	for (MCNode *tnode = this; tnode; tnode = tnode->parent) {
-		tnode->vn++; tnode->an += val;
+		tnode->UCT_v++; tnode->visit_times += val;
 	}
 }
 
 MCNode* MCNode::Play(int n) {
-	MCNode *nnode = children[n];
-	if (!nnode) {
+	MCNode *sub_node = children[n];
+	if (!sub_node) {
 		Board *tothello = new Board(*othello);
 		tothello->play(tothello->playset[n]);
-		nnode = new MCNode(tothello);
+		sub_node = new MCNode(tothello);
 	}
-	// separate the child and the root
-	// then free the tree of the root
-	nnode->parent = 0;
+
+	sub_node->parent = 0;
 	this->children[n] = 0;
 	freetree();
-	return nnode;
+	return sub_node;
 }
 
 MCNode* MCNode::Play(int x, int y) {
@@ -172,28 +179,3 @@ void MCNode::freetree() {
 }
 
 
-void MCNode::showtree(int level) {
-	for (int i = 0; i < level; i++) {
-		std::cout << "  ";
-	}
-	std::cout << "|| " << an << " / " << vn << std::endl;
-	for (int i = 0; i < children.size(); i++) {
-		if(children[i]) children[i]->showtree(level + 1);
-	}
-}
-
-void MCNode::showtree(int level, int targetlevel) {
-
-	for (int i = 0; i < level; i++) {
-		std::cout << "  ";
-	}
-	std::cout << "|| " << an << " / " << vn << std::endl;
-	if (level >= targetlevel) return;
-	for (int i = 0; i < children.size(); i++) {
-		for (int i = 0; i < level + 1; i++) {
-			std::cout << "  ";
-		}
-		std::cout << "x= " <<  Board::to2dx(othello->playset[i].pos)<< " y= " << Board::to2dy(othello->playset[i].pos) << std::endl;
-		if (children[i]) children[i]->showtree(level + 1, targetlevel);
-	}
-}
